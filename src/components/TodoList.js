@@ -1,9 +1,16 @@
+import {useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {toggleTodo,deleteTodo} from '../store/todoSlice';
+import {toggleTodo,deleteTodo, fetchTodos} from '../store/todoSlice';
 
 const TodoList = () => {
     const todos = useSelector(state => state.todos.todos);
+    const error = useSelector(state => state.todos.error);
+    const status = useSelector(state => state.todos.status);
     const dispatch = useDispatch();
+
+    useEffect( () => {
+        dispatch(fetchTodos());
+    }, [dispatch]);
 
     const handleToggle = (id) => {
         dispatch(toggleTodo(id));
@@ -15,7 +22,9 @@ const TodoList = () => {
 
     return (
         <ul className='todo-list'>
-            {todos.map(todo => (
+            {status ==='loading' && <h2> Data is Loading... </h2>}
+            {error && <h2>An error occurred : {error} </h2>}
+            {todos?.map(todo => (
               <li className='todo-item' key={todo.id}>
                   <input
                       type='checkbox'
